@@ -37,6 +37,7 @@ require(igraph)
 if(class(net.object) %in% c("matrix", "dsyMatrix", "dscMatrix", "dsparseMatrix", "dsRMatrix", "dtCMatrix", "dtpMatrix", "dtRMatrix", "dtrMatrix")) { 
     print("Matrix object detected. Converting to sparse Matrix format")
     if(is.null(rownames(net.object))) { labels <- 1:nrow(net.object) }
+    else { labels <- rownames(net.object) }
     netname <- Matrix::Matrix(net.object, dimnames=list(labels,labels)) }
 if(class(net.object)=="igraph") {
     print("igraph object detected. Converting to sparse Matrix format")
