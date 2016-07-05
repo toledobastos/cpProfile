@@ -19,6 +19,7 @@ dummy.mat <- matrix(2,length(LETTERS),length(LETTERS),dimnames=list(LETTERS,LETT
 dummy.mat2 <- Matrix::Matrix(dummy.mat)
 dummy.g <- igraph::graph.adjacency(dummy.mat)
 dummy.net <- intergraph::asNetwork(dummy.g)
+net.object <- dummy.net
 
 ###
 ### START CODE
@@ -66,7 +67,7 @@ k_out <- rowSums(A)             # column vector of node out-weights (or out-degr
 k_tot <- k_out+k_in             # total degree (or twice the degree, if undirected)
 m <- sum(k_in)                  # total weight (or total number of links) in the network
 N <- length(k_in)               # number of nodes
-Abin <- as(A, "lgCMatrix")      # binary adjacency matrix
+Abin <- as.logical(A)           # binary adjacency matrix
 if(directed==T) {directed <- 1} # use info for directed network
 if(directed==F) {directed <- 0} # use info for undirected network
 if(is.null(directed)) {
@@ -83,26 +84,25 @@ if(!any(A>1)) { weighted <- 0}  # identify weighted networks
 
 # compute Markov matrix
 cat("Computing the Markov matrix\n\n")
-# # # disp(['Computing the Markov matrix...'])
-# # # #creating the Markov matrix by row-normalizing A
-# # # P=zeros(N,N);
-# # # P=(diag(1./k_out))*A;
-# # #
-# # # disp(['Computing Markov chain asymptotic distribution...'])
-# # # #computing Markov asymptotic distribution (x)
-# # # if directed
-# # #     AAA=eye(N)-P';
-# # #     AAA(N,:)=1;
-# # #     bbb=zeros(N,1);
-# # #     bbb(N)=1;
-# # #     x=AAA\bbb;
-# # # else
-# # #     x=k_in/sum(k_in);
-# # # end;
-# # #
-# # # xP=diag(x)*P; #[xP]_ij = x_i * p_ij
 
-# A=full(A);
+# create the Markov matrix by row-normalizing A
+P=Matrix::Matrix(0, length(rownames(A)), length(colnames(A)), dimnames=list(rownames(A),colnames(A)))
+P=(diag(1./k_out))*A
+
+# compute Markov asymptotic distribution (x)
+cat('Computing Markov chain asymptotic distribution...')
+if(directed==T) {
+    AAA=diag(N)-t(P)
+    # A[N,,drop=FALSE]=1
+    AAA[N,] <- 1
+    bbb <- Matrix::Matrix(0, N, N)
+    bbb[N] <- 1
+    x <- AAA/bbb
+} else { x=k_in/sum(k_in) }
+
+# [xP]_ij = x_i * p_ij
+xP <- diag(x)*P
+A <- as.matrix(A)
 
 #################################################################
 
