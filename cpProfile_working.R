@@ -79,9 +79,6 @@ if(is.null(directed)) {
 if(any(A>1)) { weighted <- 1 }  # identify weighted networks
 if(!any(A>1)) { weighted <- 0}  # identify weighted networks
 
-# save.image("cpProfile.Rdata")
-# ## RESUME FROM HERE
-
 # compute Markov matrix
 cat("Computing the Markov matrix\n\n")
 
@@ -104,7 +101,8 @@ if(directed==T) {
 xP <- diag(x)*P
 A <- as.matrix(A)
 
-#################################################################
+# save.image("cpProfile.Rdata")
+# ## RESUME FROM HERE
 
 #sorting nodes according to total degree
 [L,nodelist] <- sort(k_in+k_out')
